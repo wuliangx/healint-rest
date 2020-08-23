@@ -1,0 +1,6 @@
+.classpath
+.mergify.yml
+.project
+.settings/
+logs/
+target/
