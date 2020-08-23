@@ -1,4 +1,4 @@
-package v1.post;
+package controllers.post;
 
 import net.jodah.failsafe.CircuitBreaker;
 import net.jodah.failsafe.Failsafe;
@@ -8,10 +8,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+
+import models.Order;
+
 import java.sql.SQLException;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
@@ -34,22 +40,22 @@ public class JPAPostRepository implements PostRepository {
     }
 
     @Override
-    public CompletionStage<Stream<PostData>> list() {
+    public CompletionStage<Stream<Order>> list() {
         return supplyAsync(() -> wrap(em -> select(em)), ec);
     }
 
     @Override
-    public CompletionStage<PostData> create(PostData postData) {
+    public CompletionStage<Order> create(Order postData) {
         return supplyAsync(() -> wrap(em -> insert(em, postData)), ec);
     }
 
     @Override
-    public CompletionStage<Optional<PostData>> get(Long id) {
+    public CompletionStage<Optional<Order>> get(Integer id) {
         return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> lookup(em, id))), ec);
     }
 
     @Override
-    public CompletionStage<Optional<PostData>> update(Long id, PostData postData) {
+    public CompletionStage<Optional<Order>> update(Integer id, Order postData) {
         return supplyAsync(() -> wrap(em -> Failsafe.with(circuitBreaker).get(() -> modify(em, id, postData))), ec);
     }
 
@@ -57,27 +63,24 @@ public class JPAPostRepository implements PostRepository {
         return jpaApi.withTransaction(function);
     }
 
-    private Optional<PostData> lookup(EntityManager em, Long id) throws SQLException {
-        throw new SQLException("Call this to cause the circuit breaker to trip");
-        //return Optional.ofNullable(em.find(PostData.class, id));
+    private Optional<Order> lookup(EntityManager em, Integer id) throws SQLException {
+        return Optional.ofNullable(em.find(Order.class, id));
     }
 
-    private Stream<PostData> select(EntityManager em) {
-        TypedQuery<PostData> query = em.createQuery("SELECT p FROM PostData p", PostData.class);
+    private Stream<Order> select(EntityManager em) {
+        TypedQuery<Order> query = em.createQuery("SELECT o FROM Order o", Order.class);
         return query.getResultList().stream();
     }
 
-    private Optional<PostData> modify(EntityManager em, Long id, PostData postData) throws InterruptedException {
-        final PostData data = em.find(PostData.class, id);
-        if (data != null) {
-            data.title = postData.title;
-            data.body = postData.body;
+    private Optional<Order> modify(EntityManager em, Integer id, Order modifiedOrder) throws InterruptedException {
+        final Order existing = em.find(Order.class, id);
+        if (existing != null) {
+        	existing.update(modifiedOrder);
         }
-        Thread.sleep(10000L);
-        return Optional.ofNullable(data);
+        return Optional.ofNullable(existing);
     }
 
-    private PostData insert(EntityManager em, PostData postData) {
+    private Order insert(EntityManager em, Order postData) {
         return em.merge(postData);
     }
 }

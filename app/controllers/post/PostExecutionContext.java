@@ -1,4 +1,4 @@
-package v1.post;
+package controllers.post;
 
 import akka.actor.ActorSystem;
 import play.libs.concurrent.CustomExecutionContext;

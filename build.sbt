@@ -1,4 +1,4 @@
-name := """play-java-rest-api-example"""
+name := """store-orders"""
 
 version := "2.6.x"
 
@@ -30,6 +30,8 @@ lazy val root = (project in file(".")).enablePlugins(PlayJava, GatlingPlugin).co
 
 libraryDependencies += guice
 libraryDependencies += javaJpa
+libraryDependencies += "mysql" % "mysql-connector-java" % "5.1.41"
+libraryDependencies += "com.opencsv" % "opencsv" % "5.2"
 libraryDependencies += "com.h2database" % "h2" % "1.4.197"
 
 libraryDependencies += "org.hibernate" % "hibernate-core" % "5.2.17.Final"

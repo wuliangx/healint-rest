@@ -4,36 +4,65 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Play REST API</title>
+    <title>Store Orders REST API</title>
   </head>
 
   <body>
-    <h1>Play REST API</h1>
+    <h1>Store Orders REST API</h1>
 
     <p>
-      This is a placeholder page to show you the REST API.  Use <a href="https://httpie.org/">httpie</a> to post JSON to the application.
+      This page lists all the REST API available for you to perform
     </p>
 
-    <p>
-      To see all posts, you can do a GET:
-    </p>
-
-
-<pre>
-    <code>http GET localhost:9000/v1/posts</code>
-</pre>
-
-    <p>
-      To create new posts, do a post
-    <p>
-
-<pre>
-    <code>http POST localhost:9000/v1/posts title="Some title" body="Some Body"</code>
-</pre>
-
-<p>
-  You can always look at the API directly: <a href="/v1/posts">/v1/posts</a>
-</p>
+    <ol>
+        <li> 
+            <p>Get all orders</p>
+            <pre>
+                <code>GET localhost:9000/orders</code>
+            </pre>
+        </li>
+        <li> 
+            <p>Get specific order (for example, order with id 8)</p>
+            <pre>
+                <code>GET localhost:9000/orders?id=8</code>
+            </pre>
+        </li>
+        <li> 
+            <p>Create order</p>
+            <pre>
+                <code>POST localhost:9000/orders Content-Type: application/json</code>
+            </pre>
+            Example Body:
+            <pre>
+{
+    "orderId": "CA-2016-152156",
+    "orderDate": "08.11.16",
+    "shipDate": "11.11.16",
+    "shipMode": "Second Class",
+    "quantity": 2,
+    "discount": "0",
+    "profit": "41.9136",
+    "productId": "FUR-BO-10001798",
+    "customerName": "Claire Gute",
+    "category": "Furniture",
+    "customerId": "CG-12520",
+    "productName": "Bush Somerset Collection"
+}
+            </pre>
+        </li>
+        <li>
+            <p>Update Order (for example, order with id 8), only specify the fields you wish to modify in the json.</p>
+            <pre>
+                <code>PUT localhost:9000/orders/8 Content-Type: application/json</code>
+            </pre>
+            Example Body:
+            <pre>
+{
+    "shipMode": "Third Class"
+}
+            </pre>
+        </li>
+    </ol>
 
   </body>
 </html>
